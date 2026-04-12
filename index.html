@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DanTagleTV - Malcolm in the Middle</title>
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons para los íconos elegantes -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Estilos personalizados para el scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-[#0f0f0f] text-white font-sans selection:bg-red-600 min-h-screen overflow-x-hidden flex flex-col">
+
+    <!-- VISTA 1: CATÁLOGO (Por defecto visible) -->
+    <div id="catalog-view" class="block">
+        <!-- Navbar -->
+        <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <h1 class="text-red-600 font-black text-2xl tracking-tighter flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <i data-lucide="tv" class="w-6 h-6"></i> DanTagle<span class="text-white">TV</span>
+                </h1>
+                <div class="hidden md:flex gap-6 text-sm font-medium text-gray-300">
+                    <span class="text-white font-semibold cursor-pointer">Series</span>
+                    <span class="hover:text-gray-400 cursor-pointer transition">Películas</span>
+                    <span class="hover:text-gray-400 cursor-pointer transition">Mi Lista</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 text-white">
+                <i data-lucide="search" class="w-5 h-5 cursor-pointer hover:text-gray-400 transition"></i>
+                <i data-lucide="bell" class="w-5 h-5 cursor-pointer hover:text-gray-400 transition"></i>
+                <div class="w-8 h-8 rounded bg-red-600 flex items-center justify-center cursor-pointer font-bold text-sm">
+                    DT
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="relative w-full pt-[45%] md:pt-[35%] bg-black">
+            <div class="absolute inset-0">
+                <img 
+                    src="https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/__ia_thumb.jpg" 
+                    alt="Malcolm Banner" 
+                    class="w-full h-full object-cover opacity-60"
+                />
+                <div class="absolute inset-0 bg-gradient-to-r from-[#0f0f0f] via-[#0f0f0f]/60 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] to-transparent"></div>
+            </div>
+
+            <div class="absolute bottom-0 left-0 p-6 md:p-16 w-full md:w-2/3 z-20 pointer-events-auto">
+                <h2 class="text-5xl md:text-7xl font-black mb-4 tracking-tighter drop-shadow-md">
+                    Malcolm in the Middle
+                </h2>
+                <div class="flex items-center gap-3 text-sm font-semibold text-gray-300 mb-6 drop-shadow" id="hero-stats">
+                    <span class="text-green-500 font-bold">98% Match</span>
+                    <span>2000 - 2006</span>
+                    <span class="border border-gray-500 px-1.5 rounded text-xs">TV-PG</span>
+                    <span id="hero-seasons-count">7 Temporadas</span>
+                    <span class="bg-gray-800/80 px-1.5 py-0.5 rounded flex items-center gap-1"><i data-lucide="message-square" class="w-3 h-3"></i> CC</span>
+                </div>
+                <p class="text-base md:text-lg text-gray-200 mb-8 line-clamp-3 md:line-clamp-none drop-shadow">
+                    Un genio adolescente lidia con las presiones de la escuela media y su excéntrica y ruidosa familia disfuncional. La aclamada comedia ganadora del Emmy.
+                </p>
+                <div class="flex gap-4">
+                    <button id="btn-play-hero" class="bg-white text-black px-6 md:px-8 py-2 md:py-3 rounded md:rounded-md font-bold text-lg flex items-center gap-2 hover:bg-gray-200 transition shadow-lg">
+                        <i data-lucide="play" class="w-6 h-6 fill-black"></i> Reproducir
+                    </button>
+                    <button class="bg-gray-500/50 text-white px-6 md:px-8 py-2 md:py-3 rounded md:rounded-md font-bold text-lg flex items-center gap-2 hover:bg-gray-500/70 transition backdrop-blur-sm">
+                        <i data-lucide="info" class="w-6 h-6"></i> Más Información
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de Temporadas -->
+        <div class="px-6 md:px-16 mt-4 mb-6 z-20 relative">
+            <div id="season-tabs" class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide border-b border-gray-800">
+                <!-- Se llenará con JavaScript -->
+            </div>
+        </div>
+
+        <!-- Grilla de Episodios -->
+        <div class="px-6 md:px-16 pb-20 z-20 relative">
+            <div id="episode-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <!-- Se llenará con JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA 2: REPRODUCTOR DE VIDEO (Por defecto oculta) -->
+    <div id="player-view" class="hidden min-h-screen bg-black text-white flex-col h-screen overflow-hidden fixed inset-0 z-[100]">
+        <!-- Barra de Navegación del Reproductor -->
+        <div class="absolute top-0 w-full z-50 p-6 flex justify-between items-center pointer-events-auto bg-gradient-to-b from-black/80 to-transparent">
+            <button id="btn-close-player" class="flex items-center gap-2 text-xl font-bold hover:text-gray-300 transition group focus:outline-none">
+                <i data-lucide="arrow-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i> 
+            </button>
+            <div class="text-center absolute left-1/2 transform -translate-x-1/2">
+                <p id="player-ep-code" class="text-gray-300 text-xs font-bold tracking-widest">S01E01</p>
+                <h2 id="player-ep-title" class="text-lg font-bold truncate max-w-sm md:max-w-md">Título</h2>
+            </div>
+            <div class="w-6"></div> <!-- Spacer -->
+        </div>
+
+        <!-- Motor de Video HTML5 -->
+        <div class="flex-grow flex items-center justify-center relative w-full h-full bg-black">
+            <video id="main-video" controls autoplay crossorigin="anonymous" class="w-full h-full max-h-screen outline-none focus:outline-none">
+                <source id="video-source" src="" type="video/mp4" />
+                <track id="video-track" label="Español (CC)" kind="subtitles" srclang="es" src="" default />
+                Tu navegador no soporta video HTML5.
+            </video>
+            
+            <!-- Botón Siguiente Episodio -->
+            <button id="btn-next-episode" class="hidden absolute bottom-20 right-8 bg-black/60 hover:bg-black/80 border border-white/10 px-5 py-2.5 rounded text-sm font-bold flex items-center gap-2 transition-all z-50 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-white">
+                Siguiente Episodio <i data-lucide="skip-forward" class="w-4 h-4 fill-white"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
+    <script>
+        // 1. BASE DE DATOS EXACTA (Los 151 episodios)
+        const rawUrls = [
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E01%20-%20Pilot.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E02%20-%20Red%20Dress.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E03%20-%20Home%20Alone%204.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E04%20-%20Shame.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E05%20-%20Malcolm%20Babysits.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E06%20-%20Sleepover.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E07%20-%20Francis%20Escapes.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E08%20-%20Krelboyne%20Picnic.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E09%20-%20Lois%20vs.%20Evil.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E10%20-%20Stock%20Car%20Races.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E11%20-%20Funeral.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E12%20-%20Cheerleader.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E13%20-%20Rollerskates.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E14%20-%20The%20Bots%20and%20the%20Bees.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E15%20-%20Smunday.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E16%20-%20Water%20Park.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E01%20-%20Traffic%20Jam.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E02%20-%20Halloween%20Approximately.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E03%20-%20Lois%27%20Birthday.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E04%20-%20Dinner%20Out.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E05%20-%20Casino.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E06%20-%20Convention.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E07%20-%20Robbery.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E08%20-%20Therapy.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E09%20-%20High%20School%20Play.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E10%20-%20The%20Bully.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E11%20-%20Old%20Mrs.%20Old.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E12%20-%20Krelboyne%20Girl.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E13%20-%20New%20Neighbors.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E14%20-%20Hal%20Quits.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E15%20-%20The%20Grandparents.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E16%20-%20Traffic%20Ticket.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E17%20-%20Surgery.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E18%20-%20Reese%20Cooks.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E19%20-%20Tutoring%20Reese.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E20%20-%20Bowling.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E21%20-%20Malcolm%20vs.%20Reese.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E22%20-%20Mini-Bike.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E23%20-%20Carnival.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E24%20-%20Evacuation.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%202/S02E25%20-%20Flashback.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E01%20-%20Houseboat.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E02%20-%20Emancipation.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E03%20-%20Book%20Club.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E04%20-%20Malcolm%27s%20Girlfriend.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E05%20-%20Charity.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E06%20-%20Health%20Scare.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E07%20-%20Christmas.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E08%20-%20Poker.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E09%20-%20Reese%27s%20Job.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E10%20-%20Lois%27%20Makeover.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E11%20-%20Company%20Picnic%20%28Part%201%29.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E12%20-%20Company%20Picnic%20%28Part%202%29.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E13%20-%20Reese%20Drives.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E14%20-%20Cynthia%27s%20Back.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E15%20-%20Hal%27s%20Birthday.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E16%20-%20Hal%20Coaches.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E17%20-%20Dewey%27s%20Dog.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E18%20-%20Poker%20%232.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E19%20-%20Clip%20Show.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E20%20-%20Jury%20Duty.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E21%20-%20Cliques.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%203/S03E22%20-%20Monkey.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E01%20-%20Zoo.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E02%20-%20Humilithon.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E03%20-%20Family%20Reunion.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E04%20-%20Stupid%20Girl.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E05%20-%20Forwards%20Backwards.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E06%20-%20Forbidden%20Girlfriend.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E07%20-%20Malcolm%20Holds%20His%20Tongue.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E08%20-%20Boys%20at%20Ranch.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E09%20-%20Grandma%20Sues.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E10%20-%20If%20Boys%20Were%20Girls.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E11%20-%20Long%20Drive.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E12%20-%20Kicked%20Out.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E13%20-%20Stereo%20Store.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E14%20-%20Hal%27s%20Friend.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E15%20-%20Garage%20Sale.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E16%20-%20Academic%20Octathalon.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E17%20-%20Clip%20Show%20%232.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E18%20-%20Reese%27s%20Party.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E19%20-%20Future%20Malcolm.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E20%20-%20Baby%20%28Part%201%29.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E21%20-%20Baby%20%28Part%202%29.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%204/S04E22%20-%20Day%20Care.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E01%20-%20Vegas.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E02%20-%20Watching%20the%20Baby.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E03%20-%20Goodbye%20Kitty.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E04%20-%20Thanksgiving.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E05%20-%20Malcolm%20Films%20Reese.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E06%20-%20Malcolm%27s%20Job.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E07%20-%20Christmas%20Trees.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E08%20-%20Block%20Party.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E09%20-%20Dirty%20Magazine.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E10%20-%20Hot%20Tub.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E11%20-%20Ida%27s%20Boyfriend.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E12%20-%20Softball.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E13%20-%20Lois%27%20Sister.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E14%20-%20Malcolm%20Dates%20a%20Family.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E15%20-%20Reese%27s%20Apartment.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E16%20-%20Malcolm%20Visits%20College.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E17%20-%20Polly%20in%20the%20Middle.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E18%20-%20Dewey%27s%20Special%20Class.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E19%20-%20Experiment.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E20%20-%20Victor%27s%20Other%20Family.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E21%20-%20Reese%20Joins%20The%20Army%20%28Part%201%29.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%205/S05E22%20-%20Reese%20Joins%20The%20Army%20%28Part%202%29.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E01%20-%20Reese%20Comes%20Home.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E02%20-%20Buseys%20Run%20Away.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E03%20-%20Standee.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E04%20-%20Pearl%20Harbor.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E05%20-%20Kitty%27s%20Back.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E06%20-%20Hal%27s%20Christmas%20Gift.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E07%20-%20Hal%20Sleepwalks.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E08%20-%20Lois%20Battles%20Jamie.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E09%20-%20Malcolm%27s%20Car.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E10%20-%20Billboard.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E11%20-%20Dewey%27s%20Opera.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E12%20-%20Living%20Will.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E13%20-%20Tiki%20Lounge.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E14%20-%20Ida%20Loses%20A%20Leg.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E15%20-%20Chad%27s%20Sleepover.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E16%20-%20No%20Motorcycles.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E17%20-%20Butterflies.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E18%20-%20Ida%27s%20Dance.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E19%20-%20Motivational%20Seminar.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E20%20-%20Stilts.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E21%20-%20Buseys%20Take%20a%20Hostage.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%206/S06E22%20-%20Mrs.%20Tri-County.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E01%20-%20Burning%20Man.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E02%20-%20Health%20Insurance.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E03%20-%20Reese%20vs.%20Stevie.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E04%20-%20Halloween.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E05%20-%20Jessica%20Stays%20Over.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E06%20-%20Secret%20Boyfriend.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E07%20-%20Blackout.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E08%20-%20Army%20Buddy.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E09%20-%20Malcolm%20Defends%20Reese.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E10%20-%20Malcolm%27s%20Money.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E11%20-%20Bride%20of%20Ida.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E12%20-%20College%20Recruiters.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E13%20-%20Mono.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E14%20-%20Hal%20Grieves.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E15%20-%20A.A..mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E16%20-%20Lois%20Strikes%20Back.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E17%20-%20Hal%27s%20Dentist.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E18%20-%20Bomb%20Shelter.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E19%20-%20Stevie%20in%20the%20Hospital.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E20%20-%20Cattle%20Court.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E21%20-%20Morp.mp4",
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E22%20-%20Graduation.mp4"
+        ];
+
+        // 2. SINOPSIS Y CALIFICACIONES (Metadata Mock)
+        const metadataDB = {
+            "S01E01": { title: "Pilot", rating: "8.8", summary: "Malcolm, de nueve años, es descubierto como un genio con un IQ de 165 y es transferido a regañadientes a la clase de los 'Krelboynes'." },
+            "S01E02": { title: "Red Dress", rating: "8.5", summary: "Lois encuentra su vestido rojo quemado y castiga a los chicos hasta que el culpable confiese. Mientras tanto, Hal asiste a un banquete." },
+            "S01E03": { title: "Home Alone 4", rating: "8.3", summary: "Hal y Lois salen el fin de semana, dejando a Francis a cargo de la casa. Naturalmente, la situación termina en un caos absoluto." },
+            "S01E04": { title: "Shame", rating: "8.1", summary: "Malcolm golpea al abusón de la escuela, pero se siente culpable al descubrir que el chico tiene siete años." },
+            "S01E05": { title: "Malcolm Babysits", rating: "8.2", summary: "Malcolm trabaja como niñero para una familia acomodada, descubriendo cómo vive la 'otra mitad'." },
+            "S02E01": { title: "Traffic Jam", rating: "8.9", summary: "La familia queda atrapada en un embotellamiento épico de camino a casa desde el parque acuático." },
+            "S02E02": { title: "Halloween Approximately", rating: "8.6", summary: "Dado que estuvieron enfermos en Halloween, los chicos construyen una catapulta gigante para aterrorizar al vecindario." }
+        };
+
+        // 3. GENERADOR DE SUBTÍTULOS EN ESPAÑOL VTT
+        const generateSpanishVTT = (title) => {
+            const vttContent = `WEBVTT\n\n1\n00:00:00.000 --> 00:00:05.000\n[Tema musical de Malcolm in the Middle]\n\n2\n00:00:05.500 --> 00:00:10.000\nEstás viendo: ${title} en DanTagleTV\n\n3\n00:00:10.500 --> 00:59:59.000\n(Audio en inglés original. Subtítulos generados por el sistema...)`;
+            return `data:text/vtt;base64,${btoa(unescape(encodeURIComponent(vttContent)))}`;
+        };
+
+        // 4. LÓGICA DEL ESTADO DE LA APP
+        let state = {
+            episodes: [],
+            seasons: [],
+            selectedSeason: 1,
+            activeEpisode: null
+        };
+
+        // Parseador inteligente de episodios
+        function initApp() {
+            state.episodes = rawUrls.map((url, globalIndex) => {
+                const match = url.match(/Season%20(\d+)\/(S\d+E\d+)%20-%20(.+)\.mp4/);
+                let season = 1, code = `S01E${globalIndex}`, title = `Episodio ${globalIndex}`;
+                
+                if (match) {
+                    season = parseInt(match[1]);
+                    code = match[2];
+                    title = decodeURIComponent(match[3]).replace(/%27/g, "'"); 
+                }
+
+                const meta = metadataDB[code] || {
+                    title: title,
+                    rating: (7.5 + (Math.random() * 1.5)).toFixed(1),
+                    summary: `La disfuncional familia de Malcolm se enfrenta a una nueva aventura en este episodio. Reese planea una travesura, Dewey descubre algo extraño y Hal se obsesiona con un nuevo pasatiempo.`
+                };
+
+                return {
+                    globalIndex,
+                    id: code,
+                    season,
+                    title: meta.title,
+                    url,
+                    rating: meta.rating,
+                    summary: meta.summary,
+                };
+            });
+
+            // Extraer temporadas
+            const uniqueSeasons = [...new Set(state.episodes.map(ep => ep.season))].sort((a,b) => a - b);
+            state.seasons = uniqueSeasons;
+            if(uniqueSeasons.length > 0) state.selectedSeason = uniqueSeasons[0];
+
+            document.getElementById('hero-seasons-count').innerText = `${state.seasons.length} Temporadas`;
+
+            // Inicializar vistas
+            renderSeasons();
+            renderGrid();
+            
+            // Asignar primer episodio al botón Play del Hero
+            document.getElementById('btn-play-hero').onclick = () => {
+                if(state.episodes.length > 0) openPlayer(state.episodes[0]);
+            };
+
+            // Instanciar íconos de lucide-react
+            lucide.createIcons();
+        }
+
+        function renderSeasons() {
+            const tabsContainer = document.getElementById('season-tabs');
+            tabsContainer.innerHTML = state.seasons.map(season => `
+                <button
+                    onclick="changeSeason(${season})"
+                    class="text-xl md:text-2xl font-bold whitespace-nowrap transition-colors pb-2 focus:outline-none ${state.selectedSeason === season ? 'text-white border-b-4 border-red-600' : 'text-gray-500 hover:text-gray-300'}"
+                >
+                    Temporada ${season}
+                </button>
+            `).join('');
+        }
+
+        function changeSeason(season) {
+            state.selectedSeason = season;
+            renderSeasons();
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const gridContainer = document.getElementById('episode-grid');
+            const filtered = state.episodes.filter(ep => ep.season === state.selectedSeason);
+            
+            gridContainer.innerHTML = filtered.map(ep => `
+                <div onclick="openPlayerByGlobalIndex(${ep.globalIndex})" class="group bg-[#181818] rounded-md overflow-hidden cursor-pointer hover:z-10 transition-transform duration-300 hover:scale-105 shadow-xl flex flex-col pointer-events-auto">
+                    <!-- Smart Thumbnail -->
+                    <div class="aspect-video w-full relative overflow-hidden flex-shrink-0 bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center border-b border-gray-800">
+                        <span class="absolute text-7xl font-black text-white/5 opacity-20 transform -rotate-12">
+                            ${ep.id}
+                        </span>
+                        <div class="absolute bottom-4 left-4 right-4 text-center z-10">
+                            <span class="text-sm font-bold text-white/80 drop-shadow-md line-clamp-1">${ep.title}</span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
+                            <i data-lucide="play-circle" class="w-12 h-12 text-white drop-shadow-lg"></i>
+                        </div>
+                        <div class="absolute top-2 right-2 bg-black/80 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                            22m
+                        </div>
+                    </div>
+                    
+                    <!-- Meta -->
+                    <div class="p-4 flex-grow flex flex-col justify-start">
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                            <h3 class="font-bold text-white text-sm leading-tight pr-2 line-clamp-1">
+                                <span class="text-gray-400 mr-1">${ep.id.split('E')[1]}.</span> ${ep.title}
+                            </h3>
+                            <div class="flex items-center gap-1 text-xs font-bold text-green-500 bg-gray-900 px-1.5 py-0.5 rounded">
+                                <i data-lucide="star" class="w-3 h-3 fill-green-500 text-green-500"></i> ${ep.rating}
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 line-clamp-3 mt-1 leading-relaxed">
+                            ${ep.summary}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Repintar los íconos de Lucide en los nuevos elementos inyectados
+            lucide.createIcons();
+        }
+
+        // --- 5. CONTROLADOR DEL REPRODUCTOR ---
+        const catalogView = document.getElementById('catalog-view');
+        const playerView = document.getElementById('player-view');
+        const videoElement = document.getElementById('main-video');
+        const videoSource = document.getElementById('video-source');
+        const videoTrack = document.getElementById('video-track');
+        const btnNextEp = document.getElementById('btn-next-episode');
+
+        function openPlayerByGlobalIndex(index) {
+            openPlayer(state.episodes[index]);
+        }
+
+        function openPlayer(episode) {
+            state.activeEpisode = episode;
+            
+            // Ocultar catálogo, mostrar reproductor
+            catalogView.classList.replace('block', 'hidden');
+            playerView.classList.replace('hidden', 'flex');
+            
+            // Actualizar Textos
+            document.getElementById('player-ep-code').innerText = episode.id;
+            document.getElementById('player-ep-title').innerText = episode.title;
+            
+            // Setear Video y Subtítulos VTT
+            videoSource.src = episode.url;
+            videoTrack.src = generateSpanishVTT(episode.title);
+            videoElement.load();
+            videoElement.play();
+
+            // Botón Siguiente
+            if (episode.globalIndex < state.episodes.length - 1) {
+                btnNextEp.classList.remove('hidden');
+                btnNextEp.onclick = () => openPlayer(state.episodes[episode.globalIndex + 1]);
+            } else {
+                btnNextEp.classList.add('hidden');
+            }
+        }
+
+        // Cerrar Reproductor
+        document.getElementById('btn-close-player').onclick = () => {
+            state.activeEpisode = null;
+            videoElement.pause();
+            videoSource.src = "";
+            playerView.classList.replace('flex', 'hidden');
+            catalogView.classList.replace('hidden', 'block');
+        };
+
+        // Binge-Watching: Auto-Play al terminar video
+        videoElement.addEventListener('ended', () => {
+            if (state.activeEpisode && state.activeEpisode.globalIndex < state.episodes.length - 1) {
+                openPlayer(state.episodes[state.activeEpisode.globalIndex + 1]);
+            }
+        });
+
+        // Inicialización
+        window.onload = initApp;
+    </script>
+</body>
+</html>
