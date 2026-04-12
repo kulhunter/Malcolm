@@ -29,6 +29,10 @@
             -webkit-box-orient: vertical;  
             overflow: hidden;
         }
+        /* Ocultar input file original */
+        input[type="file"] {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-[#0f0f0f] text-white font-sans selection:bg-red-600 min-h-screen overflow-x-hidden flex flex-col">
@@ -119,18 +123,32 @@
                 <p id="player-ep-code" class="text-gray-300 text-xs font-bold tracking-widest">S01E01</p>
                 <h2 id="player-ep-title" class="text-lg font-bold truncate max-w-sm md:max-w-md">Título</h2>
             </div>
-            <div class="w-6"></div> <!-- Spacer -->
+            
+            <!-- Botón Cargar Subtítulos Personalizados -->
+            <div>
+                <label for="subtitle-upload" class="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold text-sm flex items-center gap-2 transition shadow-lg">
+                    <i data-lucide="subtitles" class="w-4 h-4"></i> Cargar Subs (SRT)
+                </label>
+                <input id="subtitle-upload" type="file" accept=".vtt,.srt" />
+            </div>
         </div>
 
         <!-- Motor de Video HTML5 -->
         <div class="flex-grow flex items-center justify-center relative w-full h-full bg-black">
+            <!-- Quitamos el crossorigin para evitar fallos con Archive.org -->
             <video id="main-video" controls autoplay class="w-full h-full max-h-screen outline-none focus:outline-none">
-                <track id="video-track" label="Español (CC)" kind="subtitles" srclang="es" src="" default />
+                <!-- La pista de subtítulos inicia vacía y se llena si el usuario sube el archivo -->
+                <track id="video-track" label="Español (Subido)" kind="subtitles" srclang="es" src="" default />
                 Tu navegador no soporta video HTML5.
             </video>
             
+            <!-- Notificación temporal al subir subs -->
+            <div id="sub-notification" class="absolute top-24 bg-green-500/90 text-white px-4 py-2 rounded shadow-lg text-sm font-bold opacity-0 transition-opacity duration-300 pointer-events-none">
+                ¡Subtítulos cargados con éxito!
+            </div>
+
             <!-- Botón Siguiente Episodio -->
-            <button id="btn-next-episode" class="hidden absolute bottom-20 right-8 bg-black/60 hover:bg-black/80 border border-white/10 px-5 py-2.5 rounded text-sm font-bold flex items-center gap-2 transition-all z-50 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-white">
+            <button id="btn-next-episode" class="hidden absolute bottom-24 right-8 bg-black/60 hover:bg-black/80 border border-white/10 px-5 py-2.5 rounded text-sm font-bold flex items-center gap-2 transition-all z-50 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-white">
                 Siguiente Episodio <i data-lucide="skip-forward" class="w-4 h-4 fill-white"></i>
             </button>
         </div>
@@ -304,12 +322,65 @@
             "S02E02": { title: "Halloween Approximately", rating: "8.6", summary: "Dado que estuvieron enfermos en Halloween, los chicos construyen una catapulta gigante para aterrorizar al vecindario." }
         };
 
-        // 3. GENERADOR DE SUBTÍTULOS EN ESPAÑOL VTT
-        const generateSpanishVTT = (title) => {
-            const vttContent = `WEBVTT\n\n1\n00:00:00.000 --> 00:00:05.000\n[Tema musical de Malcolm in the Middle]\n\n2\n00:00:05.500 --> 00:00:10.000\nEstás viendo: ${title} en DanTagleTV\n\n3\n00:00:10.500 --> 00:59:59.000\n(Audio en inglés original. Subtítulos generados por el sistema...)`;
-            const blob = new Blob([vttContent], { type: 'text/vtt' });
-            return URL.createObjectURL(blob);
-        };
+        // 3. FUNCIONES DE CONVERSIÓN Y CARGA DE SUBTÍTULOS DESDE GITHUB (API Dinámica)
+        function convertSrtToVtt(srtContent) {
+            let vtt = "WEBVTT\n\n";
+            vtt += srtContent
+                .replace(/\{\\([ibu])\}/g, '</$1>')
+                .replace(/\{\\([ibu])\}/g, '<$1>')
+                .replace(/<br>/g, '\n')
+                .replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, '$1.$2'); // Cambia la coma a punto para ms
+            return vtt;
+        }
+
+        // Cache para evitar límites de la API de GitHub (60 req/hora)
+        const githubFoldersCache = {};
+
+        async function loadGithubSubtitle(season, epId) {
+            try {
+                // epId tiene el formato "S01E05", extraemos el "05"
+                const epNum = epId.split('E')[1];
+                const searchPattern = `${season}x${epNum}`; // Creamos el patrón de tus archivos: "1x05", "5x16", etc.
+
+                // 1. Obtener la lista de archivos de la carpeta de la temporada
+                if (!githubFoldersCache[season]) {
+                    // Ruta exacta a tus carpetas en GitHub
+                    const apiUrl = `https://api.github.com/repos/kulhunter/Malcolm/contents/subs/Malcolm_in_the_Middle%20-%20season%20${season}.es`;
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`No se pudo acceder a la carpeta de la temporada ${season}`);
+                    githubFoldersCache[season] = await response.json();
+                }
+
+                const files = githubFoldersCache[season];
+                
+                // 2. Buscar el archivo que contenga el patrón (ej. "5x16") y termine en ".srt"
+                const subtitleFile = files.find(f => f.name.includes(searchPattern) && f.name.endsWith('.srt'));
+                
+                if (!subtitleFile) throw new Error(`Subtítulo para ${searchPattern} no encontrado en GitHub.`);
+
+                // 3. Descargar el archivo crudo (.srt) desde el servidor de GitHub
+                const srtResponse = await fetch(subtitleFile.download_url);
+                if (!srtResponse.ok) throw new Error("Fallo al descargar el texto del subtítulo.");
+
+                let srtContent = await srtResponse.text();
+                let vttContent = convertSrtToVtt(srtContent);
+
+                // 4. Convertir a Blob y asignarlo al reproductor
+                const blob = new Blob([vttContent], { type: 'text/vtt' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                videoTrack.src = blobUrl;
+                videoTrack.label = "Español";
+                
+                // Forzar activación
+                if(videoElement.textTracks && videoElement.textTracks.length > 0) {
+                    videoElement.textTracks[0].mode = 'showing';
+                }
+            } catch (error) {
+                console.warn("Auto-Sub Error:", error.message);
+                videoTrack.src = ""; // Limpiar si falla la descarga
+            }
+        }
 
         // 4. LÓGICA DEL ESTADO DE LA APP
         let state = {
@@ -430,12 +501,49 @@
             lucide.createIcons();
         }
 
-        // --- 5. CONTROLADOR DEL REPRODUCTOR ---
+        // --- 5. CONTROLADOR DEL REPRODUCTOR Y SUBTÍTULOS LOCALES ---
         const catalogView = document.getElementById('catalog-view');
         const playerView = document.getElementById('player-view');
         const videoElement = document.getElementById('main-video');
         const videoTrack = document.getElementById('video-track');
         const btnNextEp = document.getElementById('btn-next-episode');
+        const subtitleInput = document.getElementById('subtitle-upload');
+        const subNotification = document.getElementById('sub-notification');
+
+        // Manejador del input de carga de subtítulos (Fallback manual)
+        subtitleInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                let content = event.target.result;
+                
+                // Si el usuario subió un .srt, lo convertimos a formato .vtt para el navegador
+                if (file.name.toLowerCase().endsWith('.srt')) {
+                    content = convertSrtToVtt(content);
+                }
+
+                // Convertir texto en una URL tipo blob cargable en el src del track
+                const blob = new Blob([content], { type: 'text/vtt' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                videoTrack.src = blobUrl;
+                videoTrack.label = "Español (Manual)";
+                
+                // Forzar activación del Closed Caption en el reproductor nativo
+                if(videoElement.textTracks && videoElement.textTracks.length > 0) {
+                    videoElement.textTracks[0].mode = 'showing';
+                }
+                
+                // Mostrar notificación visual
+                subNotification.classList.replace('opacity-0', 'opacity-100');
+                setTimeout(() => {
+                    subNotification.classList.replace('opacity-100', 'opacity-0');
+                }, 3000);
+            };
+            reader.readAsText(file);
+        });
 
         function openPlayerByGlobalIndex(index) {
             openPlayer(state.episodes[index]);
@@ -452,15 +560,16 @@
             document.getElementById('player-ep-code').innerText = episode.id;
             document.getElementById('player-ep-title').innerText = episode.title;
             
-            // Setear Video directamente en el elemento (mejor compatibilidad) y Subtítulos Blob
-            videoElement.src = episode.url;
-            videoTrack.src = generateSpanishVTT(episode.title);
-            
-            // Forzar que se muestren los subtítulos
-            if(videoElement.textTracks && videoElement.textTracks.length > 0) {
-                videoElement.textTracks[0].mode = 'showing';
-            }
+            // Limpiar pista previa
+            videoTrack.src = "";
+            subtitleInput.value = ""; 
 
+            // Setear Video directamente
+            videoElement.src = episode.url;
+
+            // Cargar subtítulos automáticamente desde tu GitHub
+            loadGithubSubtitle(episode.season, episode.id);
+            
             videoElement.load();
             videoElement.play().catch(err => console.log("Error de auto-play:", err));
 
