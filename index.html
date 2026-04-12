@@ -2,12 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DanTagleTV - Malcolm in the Middle</title>
     <!-- Tailwind CSS para el diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons para los íconos elegantes -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- WebTorrent para reproducir enlaces Magnet (Temporada 8) -->
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>
+    
     <style>
         /* Estilos personalizados para el scrollbar */
         .scrollbar-hide::-webkit-scrollbar {
@@ -29,134 +32,176 @@
             -webkit-box-orient: vertical;  
             overflow: hidden;
         }
-        /* Ocultar input file original */
-        input[type="file"] {
-            display: none;
+        .line-clamp-4 {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
+        /* Transición suave para controles del reproductor */
+        .player-controls-fade {
+            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+        .hide-controls {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
         }
     </style>
 </head>
-<body class="bg-[#0f0f0f] text-white font-sans selection:bg-red-600 min-h-screen overflow-x-hidden flex flex-col">
+<body class="bg-[#0f0f0f] text-white font-sans selection:bg-blue-500 min-h-screen overflow-x-hidden flex flex-col">
 
     <!-- VISTA 1: CATÁLOGO (Por defecto visible) -->
-    <div id="catalog-view" class="block">
+    <div id="catalog-view" class="block flex-grow flex flex-col">
         <!-- Navbar -->
-        <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/90 to-transparent px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-8">
-                <h1 class="text-red-600 font-black text-2xl tracking-tighter flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <i data-lucide="tv" class="w-6 h-6"></i> DanTagle<span class="text-white">TV</span>
+        <nav class="absolute top-0 w-full z-50 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-4 md:px-8 py-4 flex items-center justify-between">
+            <!-- Icono TV Mobile / Logo Desktop -->
+            <div class="flex items-center">
+                <h1 class="text-white font-black text-xl tracking-tighter flex items-center gap-1 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <i data-lucide="tv" class="w-6 h-6 text-blue-500"></i> <span class="hidden md:inline">DanTagleTV</span>
                 </h1>
-                <div class="hidden md:flex gap-6 text-sm font-medium text-gray-300">
-                    <span class="text-white font-semibold cursor-pointer">Series</span>
-                    <span class="hover:text-gray-400 cursor-pointer transition">Películas</span>
-                    <span class="hover:text-gray-400 cursor-pointer transition">Mi Lista</span>
-                </div>
             </div>
-            <div class="flex items-center gap-4 text-white">
-                <i data-lucide="search" class="w-5 h-5 cursor-pointer hover:text-gray-400 transition"></i>
-                <i data-lucide="bell" class="w-5 h-5 cursor-pointer hover:text-gray-400 transition"></i>
-                <div class="w-8 h-8 rounded bg-red-600 flex items-center justify-center cursor-pointer font-bold text-sm">
+            
+            <!-- Enlaces Profesionales -->
+            <div class="flex items-center gap-4 md:gap-8 text-xs md:text-sm font-semibold text-gray-200">
+                <a href="https://dantagle.cl" target="_blank" class="hover:text-white transition drop-shadow-md hidden md:block">dantagle.cl</a>
+                <a href="https://linkedin.com/in/dantagle" target="_blank" class="hover:text-white transition drop-shadow-md hidden md:block">LinkedIn</a>
+                <a href="https://behance.net/dantagle" target="_blank" class="hover:text-white transition drop-shadow-md hidden md:block">Behance</a>
+                
+                <!-- Enlaces Mobile (Iconos) -->
+                <a href="https://dantagle.cl" target="_blank" class="md:hidden hover:text-white transition"><i data-lucide="globe" class="w-5 h-5"></i></a>
+                <a href="https://linkedin.com/in/dantagle" target="_blank" class="md:hidden hover:text-white transition"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+            </div>
+
+            <!-- Acciones Usuario -->
+            <div class="flex items-center gap-3 md:gap-5 text-white">
+                <i data-lucide="search" class="w-5 h-5 cursor-pointer hover:text-gray-300 transition drop-shadow-md"></i>
+                <i data-lucide="bell" class="w-5 h-5 cursor-pointer hover:text-gray-300 transition drop-shadow-md hidden sm:block"></i>
+                <div class="w-7 h-7 md:w-8 md:h-8 rounded bg-blue-500 flex items-center justify-center cursor-pointer font-bold text-[10px] md:text-xs text-white shadow-lg border border-blue-400/50">
                     DT
                 </div>
             </div>
         </nav>
 
-        <!-- Hero Section -->
-        <div class="relative w-full pt-[45%] md:pt-[35%] bg-black">
+        <!-- Hero Section (Disney+ Style Mobile Optimized) -->
+        <div class="relative w-full pt-[130%] sm:pt-[80%] md:pt-[38%] bg-[#0f0f0f]">
             <div class="absolute inset-0">
+                <!-- Imagen de Fondo (De tu Github) -->
                 <img 
-                    src="https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/__ia_thumb.jpg" 
-                    alt="Malcolm Banner" 
-                    class="w-full h-full object-cover opacity-60"
+                    src="https://raw.githubusercontent.com/kulhunter/Malcolm/main/fondomalcolm.webp" 
+                    alt="Malcolm Background" 
+                    class="w-full h-full object-cover object-top opacity-70 md:opacity-50"
                 />
-                <div class="absolute inset-0 bg-gradient-to-r from-[#0f0f0f] via-[#0f0f0f]/60 to-transparent"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] to-transparent"></div>
+                <!-- Gradientes para fundir con el fondo -->
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/80 md:via-[#0f0f0f]/40 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#0f0f0f] via-transparent to-transparent hidden md:block"></div>
             </div>
 
-            <div class="absolute bottom-0 left-0 p-6 md:p-16 w-full md:w-2/3 z-20 pointer-events-auto">
-                <h2 class="text-5xl md:text-7xl font-black mb-4 tracking-tighter drop-shadow-md">
-                    Malcolm in the Middle
-                </h2>
-                <div class="flex items-center gap-3 text-sm font-semibold text-gray-300 mb-6 drop-shadow" id="hero-stats">
-                    <span class="text-green-500 font-bold">98% Match</span>
-                    <span>2000 - 2006</span>
-                    <span class="border border-gray-500 px-1.5 rounded text-xs">TV-PG</span>
-                    <span id="hero-seasons-count">7 Temporadas</span>
-                    <span class="bg-gray-800/80 px-1.5 py-0.5 rounded flex items-center gap-1"><i data-lucide="message-square" class="w-3 h-3"></i> CC</span>
+            <div class="absolute bottom-0 left-0 w-full p-4 pb-6 md:p-16 md:w-2/3 z-20 pointer-events-auto flex flex-col items-center md:items-start text-center md:text-left">
+                <!-- Logo (De tu Github) -->
+                <img 
+                    src="https://raw.githubusercontent.com/kulhunter/Malcolm/main/logomalcolm.webp" 
+                    alt="Malcolm in the Middle Logo" 
+                    class="w-64 sm:w-80 md:w-96 mb-3 md:mb-6 drop-shadow-2xl object-contain"
+                />
+                
+                <!-- Estadísticas y Metadatos -->
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 text-[11px] md:text-sm font-semibold text-gray-300 mb-3 drop-shadow-md" id="hero-stats">
+                    <span class="text-green-400 font-bold">98% Match</span>
+                    <span>2000-2026</span>
+                    <span class="border border-gray-500 bg-black/50 px-1.5 py-0.5 rounded text-[9px] md:text-xs">TV-14</span>
+                    <span id="hero-seasons-count">8 Temporadas</span>
+                    <span>Comedia</span>
+                    <span class="bg-gray-800/80 border border-gray-600 px-1.5 py-0.5 rounded flex items-center gap-1"><i data-lucide="message-square" class="w-3 h-3"></i> CC</span>
                 </div>
-                <p class="text-base md:text-lg text-gray-200 mb-8 line-clamp-3 md:line-clamp-none drop-shadow">
-                    Un genio adolescente lidia con las presiones de la escuela media y su excéntrica y ruidosa familia disfuncional. La aclamada comedia ganadora del Emmy.
+                
+                <!-- Resumen -->
+                <p class="text-xs sm:text-sm md:text-base text-gray-200 mb-6 line-clamp-4 md:line-clamp-none drop-shadow-md max-w-2xl font-medium leading-relaxed px-2 md:px-0">
+                    A Malcolm, un niño de nueve años a quien le gusta andar en patineta y pasar el rato con su mejor amigo Stevie, le cambia la vida cuando lo obligan a entrar en la clase de “talentosos” y se encuentra rodeado de un grupo de marginados. Como a su hermano mayor lo enviaron a la escuela militar, Malcolm debe enfrentar a Reese y Dewey. Sus padres, Lois y Hal, luchan por mantener la unidad.
                 </p>
-                <div class="flex gap-4">
-                    <button id="btn-play-hero" class="bg-white text-black px-6 md:px-8 py-2 md:py-3 rounded md:rounded-md font-bold text-lg flex items-center gap-2 hover:bg-gray-200 transition shadow-lg">
-                        <i data-lucide="play" class="w-6 h-6 fill-black"></i> Reproducir
+                
+                <!-- Botones -->
+                <div class="flex flex-col sm:flex-row w-full md:w-auto gap-3 px-4 md:px-0">
+                    <button id="btn-play-hero" class="w-full sm:w-auto bg-white text-black py-3 px-8 rounded flex items-center justify-center gap-2 hover:bg-gray-200 transition shadow-xl font-bold text-sm md:text-base">
+                        <i data-lucide="play" class="w-5 h-5 md:w-6 md:h-6 fill-black"></i> REPRODUCIR
                     </button>
-                    <button class="bg-gray-500/50 text-white px-6 md:px-8 py-2 md:py-3 rounded md:rounded-md font-bold text-lg flex items-center gap-2 hover:bg-gray-500/70 transition backdrop-blur-sm">
-                        <i data-lucide="info" class="w-6 h-6"></i> Más Información
+                    <button class="w-full sm:w-auto bg-gray-600/60 border border-gray-400/30 text-white py-3 px-8 rounded flex items-center justify-center gap-2 hover:bg-gray-500/70 transition backdrop-blur-md font-semibold text-sm md:text-base">
+                        <i data-lucide="plus" class="w-5 h-5 md:w-6 md:h-6"></i> MI LISTA
                     </button>
                 </div>
             </div>
         </div>
 
+        <!-- Título Sección -->
+        <div class="px-4 md:px-16 mt-4 md:mt-8 z-20 relative">
+            <h3 class="text-sm md:text-base font-bold text-gray-400 tracking-wider mb-2">EPISODIOS</h3>
+        </div>
+
         <!-- Selector de Temporadas -->
-        <div class="px-6 md:px-16 mt-4 mb-6 z-20 relative">
-            <div id="season-tabs" class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide border-b border-gray-800">
+        <div class="px-4 md:px-16 mb-4 md:mb-6 z-20 relative">
+            <div id="season-tabs" class="flex gap-4 md:gap-8 overflow-x-auto pb-2 scrollbar-hide border-b border-gray-800/60">
                 <!-- Se llenará con JavaScript -->
             </div>
         </div>
 
         <!-- Grilla de Episodios -->
-        <div class="px-6 md:px-16 pb-20 z-20 relative">
-            <div id="episode-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div class="px-4 md:px-16 pb-12 z-20 relative flex-grow">
+            <div id="episode-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 <!-- Se llenará con JavaScript -->
             </div>
         </div>
+
+        <!-- Footer Legal -->
+        <footer class="w-full bg-[#050505] text-gray-500 text-[10px] md:text-xs text-center py-10 px-6 mt-auto border-t border-gray-800/50">
+            <div class="max-w-4xl mx-auto flex flex-col gap-2">
+                <p>Este sitio no contiene material con copyright, ya que solo está reproduciendo contenido de <a href="https://archive.org" target="_blank" class="text-gray-300 hover:text-white underline transition">archive.org</a> sin descargarlo, solo reproduciéndolo.</p>
+                <p>Los subtítulos son propiedad de <a href="https://dantagle.cl" target="_blank" class="text-gray-300 hover:text-white underline transition">dantagle.cl</a> en su traducción al español.</p>
+                <p>En inglés gracias a la web de <a href="http://www.tvsubtitles.net" target="_blank" class="text-gray-300 hover:text-white underline transition">tvsubtitles.net</a> — Todos los derechos reservados (incluye enlaces y menciones).</p>
+                <p class="mt-4 text-gray-600">&copy; 2026 DanTagleTV. Proyecto Educativo y de Exhibición.</p>
+            </div>
+        </footer>
     </div>
 
-    <!-- VISTA 2: REPRODUCTOR DE VIDEO (Por defecto oculta) -->
+    <!-- VISTA 2: REPRODUCTOR DE VIDEO -->
     <div id="player-view" class="hidden min-h-screen bg-black text-white flex-col h-screen overflow-hidden fixed inset-0 z-[100]">
-        <!-- Barra de Navegación del Reproductor -->
-        <div class="absolute top-0 w-full z-50 p-6 flex justify-between items-center pointer-events-auto bg-gradient-to-b from-black/80 to-transparent">
-            <button id="btn-close-player" class="flex items-center gap-2 text-xl font-bold hover:text-gray-300 transition group focus:outline-none">
-                <i data-lucide="arrow-left" class="w-6 h-6 group-hover:-translate-x-1 transition-transform"></i> 
+        
+        <!-- Barra de Navegación del Reproductor (Aparece y Desaparece al mover el mouse) -->
+        <div id="player-top-bar" class="player-controls-fade absolute top-0 w-full z-50 p-4 md:p-6 flex items-center justify-between pointer-events-auto bg-gradient-to-b from-black/90 to-transparent">
+            <!-- Botón Volver -->
+            <button id="btn-close-player" class="flex-none flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/50 hover:bg-black border border-white/20 text-white transition focus:outline-none z-50 backdrop-blur-md">
+                <i data-lucide="arrow-left" class="w-5 h-5 mx-auto"></i>
             </button>
-            <div class="text-center absolute left-1/2 transform -translate-x-1/2">
-                <p id="player-ep-code" class="text-gray-300 text-xs font-bold tracking-widest">S01E01</p>
-                <h2 id="player-ep-title" class="text-lg font-bold truncate max-w-sm md:max-w-md">Título</h2>
+            
+            <!-- Info Episodio Central -->
+            <div class="flex-1 text-center px-4 drop-shadow-md">
+                <p id="player-ep-code" class="text-gray-300 text-[10px] md:text-xs font-bold tracking-widest uppercase">S01E01</p>
+                <h2 id="player-ep-title" class="text-sm md:text-lg font-bold truncate max-w-[200px] md:max-w-md mx-auto">Título</h2>
             </div>
             
-            <!-- Botón Cargar Subtítulos Personalizados -->
-            <div>
-                <label for="subtitle-upload" class="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold text-sm flex items-center gap-2 transition shadow-lg">
-                    <i data-lucide="subtitles" class="w-4 h-4"></i> Cargar Subs (SRT)
-                </label>
-                <input id="subtitle-upload" type="file" accept=".vtt,.srt" />
+            <!-- Loading Indicator para Torrents -->
+            <div id="torrent-loader" class="hidden flex-none items-center justify-center bg-black/50 rounded-full w-10 h-10 backdrop-blur-md border border-white/10">
+                <i data-lucide="loader-2" class="w-5 h-5 animate-spin text-blue-500"></i>
             </div>
+            <div class="flex-none w-10 md:w-12 block" id="spacer-top"></div> <!-- Spacer -->
         </div>
 
         <!-- Motor de Video HTML5 -->
-        <div class="flex-grow flex items-center justify-center relative w-full h-full bg-black">
-            <!-- Quitamos el crossorigin para evitar fallos con Archive.org -->
+        <div class="flex-grow flex items-center justify-center relative w-full h-full bg-black" id="video-container">
             <video id="main-video" controls autoplay class="w-full h-full max-h-screen outline-none focus:outline-none">
-                <!-- La pista de subtítulos inicia vacía y se llena si el usuario sube el archivo -->
-                <track id="video-track" label="Español (Subido)" kind="subtitles" srclang="es" src="" default />
+                <track id="video-track" label="Español" kind="subtitles" srclang="es" src="" default />
                 Tu navegador no soporta video HTML5.
             </video>
             
-            <!-- Notificación temporal al subir subs -->
-            <div id="sub-notification" class="absolute top-24 bg-green-500/90 text-white px-4 py-2 rounded shadow-lg text-sm font-bold opacity-0 transition-opacity duration-300 pointer-events-none">
-                ¡Subtítulos cargados con éxito!
-            </div>
-
-            <!-- Botón Siguiente Episodio -->
-            <button id="btn-next-episode" class="hidden absolute bottom-24 right-8 bg-black/60 hover:bg-black/80 border border-white/10 px-5 py-2.5 rounded text-sm font-bold flex items-center gap-2 transition-all z-50 pointer-events-auto focus:outline-none focus:ring-2 focus:ring-white">
-                Siguiente Episodio <i data-lucide="skip-forward" class="w-4 h-4 fill-white"></i>
+            <!-- Botón Siguiente Episodio (Aparece en los últimos 45 segundos) -->
+            <button id="btn-next-episode" class="hide-controls player-controls-fade absolute bottom-24 right-4 md:right-8 bg-white text-black hover:bg-gray-200 px-4 py-2 md:px-6 md:py-3 rounded font-bold flex items-center gap-2 transition-all z-50 pointer-events-auto focus:outline-none shadow-2xl text-sm md:text-base cursor-pointer">
+                Siguiente <i data-lucide="skip-forward" class="w-4 h-4 md:w-5 md:h-5 fill-black"></i>
             </button>
         </div>
     </div>
 
     <!-- SCRIPT PRINCIPAL DE LA APLICACIÓN -->
     <script>
-        // 1. BASE DE DATOS EXACTA (Los 151 episodios)
+        // 1. BASE DE DATOS DE URLs (Incluye Archive.org + Torrents Magnet T8)
         const rawUrls = [
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E01%20-%20Pilot.mp4",
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E02%20-%20Red%20Dress.mp4",
@@ -308,7 +353,13 @@
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E19%20-%20Stevie%20in%20the%20Hospital.mp4",
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E20%20-%20Cattle%20Court.mp4",
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E21%20-%20Morp.mp4",
-            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E22%20-%20Graduation.mp4"
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E22%20-%20Graduation.mp4",
+            
+            // --- TEMPORADA 8 (NUEVA TEMPORADA 2026 - MAGNET LINKS) ---
+            "magnet:?xt=urn:btih:f92020b2043832865595619449a1239346bc32ce&dn=Malcom.in.the.Middle.La.vida.sigue.siendo.injusta.S01E01.2026.1080p-Dual-Lat",
+            "magnet:?xt=urn:btih:568d2bada336a71cea7674b7b04d986384e0a0fa&dn=Malcom.in.the.Middle.La.vida.sigue.siendo.injusta.S01E02.2026.1080p-Dual-Lat",
+            "magnet:?xt=urn:btih:ca6f7c8449ec06f9b9d6aeeaee1a2ebefbe91b75&xt=urn:btmh:12200c25bacd19e61b53648291ed5bbd35dcda1a42ad5c510137c7f8465b335435b1&dn=Malcom.in.the.Middle.La.vida.sigue.siendo.injusta.S01E03.2026.WEB-DL.1080p-Dual-Lat",
+            "magnet:?xt=urn:btih:2d1f36dde1f869729a03859ae0c246e537ac7e18&dn=Malcom.in.the.Middle.La.vida.sigue.siendo.injusta.S01E04.2026.1080p-Dual-Lat"
         ];
 
         // 2. SINOPSIS Y CALIFICACIONES (Metadata Mock)
@@ -322,6 +373,16 @@
             "S02E02": { title: "Halloween Approximately", rating: "8.6", summary: "Dado que estuvieron enfermos en Halloween, los chicos construyen una catapulta gigante para aterrorizar al vecindario." }
         };
 
+        // Arreglo de Imágenes de Fondo (Stills Reales de la Serie de TMDB) para rotarlas
+        const backdropImages = [
+            "https://image.tmdb.org/t/p/w780/jY6G33x94L3N4A30aWe2Xy0JdO8.jpg",
+            "https://image.tmdb.org/t/p/w780/hT0oVzV5NqQ0h8C1S3k9A5W6Y3B.jpg",
+            "https://image.tmdb.org/t/p/w780/1v0E2w2F1L2a1L0A3D2q9K0a9S3.jpg",
+            "https://image.tmdb.org/t/p/w780/p9n9K0wX5z8u6O2m1V4z1n8k9K5.jpg",
+            "https://image.tmdb.org/t/p/w780/c8Bq0M421xVd1nXX3D6Q9G67LCH.jpg",
+            "https://image.tmdb.org/t/p/w780/6x8zWbKj0jY6G33x94L3N4A30aW.jpg"
+        ];
+
         // 3. FUNCIONES DE CONVERSIÓN Y CARGA DE SUBTÍTULOS DESDE GITHUB (API Dinámica)
         function convertSrtToVtt(srtContent) {
             let vtt = "WEBVTT\n\n";
@@ -333,18 +394,20 @@
             return vtt;
         }
 
-        // Cache para evitar límites de la API de GitHub (60 req/hora)
+        // Cache para evitar límites de la API de GitHub
         const githubFoldersCache = {};
 
         async function loadGithubSubtitle(season, epId) {
             try {
+                // Si es temporada 8, de momento no buscaremos subs allí a menos que los subas.
+                if (season === 8) throw new Error("Aún no hay subtítulos de la Temporada 8.");
+
                 // epId tiene el formato "S01E05", extraemos el "05"
                 const epNum = epId.split('E')[1];
-                const searchPattern = `${season}x${epNum}`; // Creamos el patrón de tus archivos: "1x05", "5x16", etc.
+                const searchPattern = `${season}x${epNum}`; // "1x05", "5x16", etc.
 
                 // 1. Obtener la lista de archivos de la carpeta de la temporada
                 if (!githubFoldersCache[season]) {
-                    // Ruta exacta a tus carpetas en GitHub
                     const apiUrl = `https://api.github.com/repos/kulhunter/Malcolm/contents/subs/Malcolm_in_the_Middle%20-%20season%20${season}.es`;
                     const response = await fetch(apiUrl);
                     if (!response.ok) throw new Error(`No se pudo acceder a la carpeta de la temporada ${season}`);
@@ -358,7 +421,7 @@
                 
                 if (!subtitleFile) throw new Error(`Subtítulo para ${searchPattern} no encontrado en GitHub.`);
 
-                // 3. Descargar el archivo crudo (.srt) desde el servidor de GitHub
+                // 3. Descargar el archivo crudo (.srt)
                 const srtResponse = await fetch(subtitleFile.download_url);
                 if (!srtResponse.ok) throw new Error("Fallo al descargar el texto del subtítulo.");
 
@@ -378,7 +441,7 @@
                 }
             } catch (error) {
                 console.warn("Auto-Sub Error:", error.message);
-                videoTrack.src = ""; // Limpiar si falla la descarga
+                videoTrack.src = ""; // Limpiar si falla
             }
         }
 
@@ -390,23 +453,38 @@
             activeEpisode: null
         };
 
+        // Cliente de WebTorrent
+        let torrentClient = null;
+
         // Parseador inteligente de episodios
         function initApp() {
             state.episodes = rawUrls.map((url, globalIndex) => {
-                const match = url.match(/Season%20(\d+)\/(S\d+E\d+)%20-%20(.+)\.mp4/);
                 let season = 1, code = `S01E${globalIndex}`, title = `Episodio ${globalIndex}`;
                 
-                if (match) {
-                    season = parseInt(match[1]);
-                    code = match[2];
-                    title = decodeURIComponent(match[3]).replace(/%27/g, "'"); 
+                if (url.startsWith('magnet:')) {
+                    season = 8;
+                    const epMatch = url.match(/S01E0(\d)/i);
+                    const epNum = epMatch ? epMatch[1] : ((globalIndex % 4) + 1);
+                    code = `S08E0${epNum}`;
+                    title = `La vida sigue siendo injusta - Parte ${epNum}`;
+                } else {
+                    const match = url.match(/Season%20(\d+)\/(S\d+E\d+)%20-%20(.+)\.mp4/);
+                    if (match) {
+                        season = parseInt(match[1]);
+                        code = match[2];
+                        title = decodeURIComponent(match[3]).replace(/%27/g, "'"); 
+                    }
                 }
 
                 const meta = metadataDB[code] || {
                     title: title,
                     rating: (7.5 + (Math.random() * 1.5)).toFixed(1),
-                    summary: `La disfuncional familia de Malcolm se enfrenta a una nueva aventura en este episodio. Reese planea una travesura, Dewey descubre algo extraño y Hal se obsesiona con un nuevo pasatiempo.`
+                    summary: `La disfuncional familia de Malcolm se enfrenta a una nueva aventura en este episodio. Lois impone su autoridad, mientras Hal encuentra un pasatiempo extravagante.`
                 };
+
+                // Formato de portada en GitHub: "1X01.jpg"
+                const epNum = code.split('E')[1] || "01";
+                const coverUrl = `https://raw.githubusercontent.com/kulhunter/Malcolm/main/covers/${season}X${epNum}.jpg`;
 
                 return {
                     globalIndex,
@@ -416,15 +494,13 @@
                     url,
                     rating: meta.rating,
                     summary: meta.summary,
+                    thumbnail: coverUrl
                 };
             });
 
-            // Extraer temporadas
             const uniqueSeasons = [...new Set(state.episodes.map(ep => ep.season))].sort((a,b) => a - b);
             state.seasons = uniqueSeasons;
             if(uniqueSeasons.length > 0) state.selectedSeason = uniqueSeasons[0];
-
-            document.getElementById('hero-seasons-count').innerText = `${state.seasons.length} Temporadas`;
 
             // Inicializar vistas
             renderSeasons();
@@ -435,7 +511,6 @@
                 if(state.episodes.length > 0) openPlayer(state.episodes[0]);
             };
 
-            // Instanciar íconos de lucide-react
             lucide.createIcons();
         }
 
@@ -444,7 +519,7 @@
             tabsContainer.innerHTML = state.seasons.map(season => `
                 <button
                     onclick="changeSeason(${season})"
-                    class="text-xl md:text-2xl font-bold whitespace-nowrap transition-colors pb-2 focus:outline-none ${state.selectedSeason === season ? 'text-white border-b-4 border-red-600' : 'text-gray-500 hover:text-gray-300'}"
+                    class="text-sm md:text-xl font-bold whitespace-nowrap transition-colors pb-2 focus:outline-none ${state.selectedSeason === season ? 'text-white border-b-2 md:border-b-4 border-red-600' : 'text-gray-500 hover:text-gray-300'}"
                 >
                     Temporada ${season}
                 </button>
@@ -462,88 +537,52 @@
             const filtered = state.episodes.filter(ep => ep.season === state.selectedSeason);
             
             gridContainer.innerHTML = filtered.map(ep => `
-                <div onclick="openPlayerByGlobalIndex(${ep.globalIndex})" class="group bg-[#181818] rounded-md overflow-hidden cursor-pointer hover:z-10 transition-transform duration-300 hover:scale-105 shadow-xl flex flex-col pointer-events-auto">
-                    <!-- Smart Thumbnail -->
-                    <div class="aspect-video w-full relative overflow-hidden flex-shrink-0 bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center border-b border-gray-800">
-                        <span class="absolute text-7xl font-black text-white/5 opacity-20 transform -rotate-12">
-                            ${ep.id}
-                        </span>
-                        <div class="absolute bottom-4 left-4 right-4 text-center z-10">
-                            <span class="text-sm font-bold text-white/80 drop-shadow-md line-clamp-1">${ep.title}</span>
+                <div onclick="openPlayerByGlobalIndex(${ep.globalIndex})" class="group bg-[#1a1c23] rounded-md overflow-hidden cursor-pointer hover:z-10 transition-transform duration-300 hover:scale-105 shadow-xl flex flex-col pointer-events-auto border border-[#2a2c33] hover:border-gray-500">
+                    <!-- Smart Thumbnail con imagen de fondo rotatoria -->
+                    <div class="aspect-video w-full relative overflow-hidden flex-shrink-0 flex items-center justify-center border-b border-[#2a2c33] bg-gray-900">
+                        <img src="${ep.thumbnail}" alt="Thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity" onerror="this.src='https://image.tmdb.org/t/p/w780/jY6G33x94L3N4A30aWe2Xy0JdO8.jpg'"/>
+                        
+                        <div class="absolute bottom-3 md:bottom-4 left-4 right-4 text-center z-10 hidden group-hover:block transition-all">
+                            <span class="text-xs md:text-sm font-bold text-white drop-shadow-md line-clamp-1">${ep.title}</span>
                         </div>
-                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition duration-300"></div>
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition duration-300"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
-                            <i data-lucide="play-circle" class="w-12 h-12 text-white drop-shadow-lg"></i>
+                            <i data-lucide="play-circle" class="w-10 h-10 md:w-12 md:h-12 text-white drop-shadow-lg"></i>
                         </div>
-                        <div class="absolute top-2 right-2 bg-black/80 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                        <div class="absolute top-2 right-2 bg-black/80 text-gray-300 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-md border border-gray-700">
                             22m
                         </div>
                     </div>
                     
                     <!-- Meta -->
-                    <div class="p-4 flex-grow flex flex-col justify-start">
-                        <div class="flex justify-between items-start mb-2 gap-2">
-                            <h3 class="font-bold text-white text-sm leading-tight pr-2 line-clamp-1">
-                                <span class="text-gray-400 mr-1">${ep.id.split('E')[1]}.</span> ${ep.title}
+                    <div class="p-3 md:p-4 flex-grow flex flex-col justify-start bg-[#1a1c23]">
+                        <div class="flex justify-between items-start mb-1 gap-2">
+                            <h3 class="font-bold text-gray-200 text-[11px] md:text-sm leading-tight pr-2 line-clamp-1 group-hover:text-white transition">
+                                <span class="text-gray-400 mr-1 font-semibold">${ep.id.split('E')[1]}.</span> ${ep.title}
                             </h3>
-                            <div class="flex items-center gap-1 text-xs font-bold text-green-500 bg-gray-900 px-1.5 py-0.5 rounded">
-                                <i data-lucide="star" class="w-3 h-3 fill-green-500 text-green-500"></i> ${ep.rating}
+                            <div class="flex items-center gap-1 text-[9px] md:text-[11px] font-bold text-green-500 bg-gray-900 px-1.5 py-0.5 rounded border border-gray-800">
+                                <i data-lucide="star" class="w-2.5 h-2.5 fill-green-500 text-green-500"></i> ${ep.rating}
                             </div>
                         </div>
-                        <p class="text-xs text-gray-400 line-clamp-3 mt-1 leading-relaxed">
+                        <p class="text-[10px] md:text-xs text-gray-500 line-clamp-3 mt-1 leading-relaxed">
                             ${ep.summary}
                         </p>
                     </div>
                 </div>
             `).join('');
 
-            // Repintar los íconos de Lucide en los nuevos elementos inyectados
             lucide.createIcons();
         }
 
-        // --- 5. CONTROLADOR DEL REPRODUCTOR Y SUBTÍTULOS LOCALES ---
+        // --- 5. CONTROLADOR DEL REPRODUCTOR ---
         const catalogView = document.getElementById('catalog-view');
         const playerView = document.getElementById('player-view');
         const videoElement = document.getElementById('main-video');
         const videoTrack = document.getElementById('video-track');
         const btnNextEp = document.getElementById('btn-next-episode');
-        const subtitleInput = document.getElementById('subtitle-upload');
-        const subNotification = document.getElementById('sub-notification');
-
-        // Manejador del input de carga de subtítulos (Fallback manual)
-        subtitleInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                let content = event.target.result;
-                
-                // Si el usuario subió un .srt, lo convertimos a formato .vtt para el navegador
-                if (file.name.toLowerCase().endsWith('.srt')) {
-                    content = convertSrtToVtt(content);
-                }
-
-                // Convertir texto en una URL tipo blob cargable en el src del track
-                const blob = new Blob([content], { type: 'text/vtt' });
-                const blobUrl = URL.createObjectURL(blob);
-                
-                videoTrack.src = blobUrl;
-                videoTrack.label = "Español (Manual)";
-                
-                // Forzar activación del Closed Caption en el reproductor nativo
-                if(videoElement.textTracks && videoElement.textTracks.length > 0) {
-                    videoElement.textTracks[0].mode = 'showing';
-                }
-                
-                // Mostrar notificación visual
-                subNotification.classList.replace('opacity-0', 'opacity-100');
-                setTimeout(() => {
-                    subNotification.classList.replace('opacity-100', 'opacity-0');
-                }, 3000);
-            };
-            reader.readAsText(file);
-        });
+        const torrentLoader = document.getElementById('torrent-loader');
+        
+        let mouseTimer = null;
 
         function openPlayerByGlobalIndex(index) {
             openPlayer(state.episodes[index]);
@@ -553,43 +592,71 @@
             state.activeEpisode = episode;
             
             // Ocultar catálogo, mostrar reproductor
+            catalogView.classList.replace('flex-grow', 'hidden');
             catalogView.classList.replace('block', 'hidden');
             playerView.classList.replace('hidden', 'flex');
             
-            // Actualizar Textos
+            // Ocultar botón "Siguiente" por defecto al abrir
+            btnNextEp.classList.add('hidden', 'hide-controls');
+            
             document.getElementById('player-ep-code').innerText = episode.id;
             document.getElementById('player-ep-title').innerText = episode.title;
             
-            // Limpiar pista previa
             videoTrack.src = "";
-            subtitleInput.value = ""; 
-
-            // Setear Video directamente
-            videoElement.src = episode.url;
-
-            // Cargar subtítulos automáticamente desde tu GitHub
-            loadGithubSubtitle(episode.season, episode.id);
+            videoElement.src = "";
             
-            videoElement.load();
-            videoElement.play().catch(err => console.log("Error de auto-play:", err));
+            if (torrentClient) {
+                torrentClient.destroy();
+                torrentClient = null;
+            }
 
-            // Botón Siguiente
-            if (episode.globalIndex < state.episodes.length - 1) {
-                btnNextEp.classList.remove('hidden');
-                btnNextEp.onclick = () => openPlayer(state.episodes[episode.globalIndex + 1]);
+            if (episode.url.startsWith('magnet:')) {
+                torrentLoader.classList.replace('hidden', 'flex'); 
+                torrentClient = new WebTorrent();
+                
+                torrentClient.add(episode.url, function (torrent) {
+                    const file = torrent.files.find(f => f.name.endsWith('.mp4') || f.name.endsWith('.mkv'));
+                    if (file) {
+                        file.renderTo('video#main-video', { autoplay: true }, function(err, elem) {
+                            torrentLoader.classList.replace('flex', 'hidden'); 
+                        });
+                    }
+                });
             } else {
-                btnNextEp.classList.add('hidden');
+                videoElement.src = episode.url;
+                loadGithubSubtitle(episode.season, episode.id);
+                videoElement.load();
+                videoElement.play().catch(err => console.log("Error de auto-play:", err));
             }
         }
 
-        // Cerrar Reproductor
-        document.getElementById('btn-close-player').onclick = () => {
-            state.activeEpisode = null;
-            videoElement.pause();
-            videoElement.src = "";
-            playerView.classList.replace('flex', 'hidden');
-            catalogView.classList.replace('hidden', 'block');
-        };
+        // Mostrar botón "Siguiente" solo en los últimos 45 segundos o si terminó
+        videoElement.addEventListener('timeupdate', () => {
+            if (!videoElement.duration) return;
+            const timeLeft = videoElement.duration - videoElement.currentTime;
+            
+            if (state.activeEpisode && state.activeEpisode.globalIndex < state.episodes.length - 1) {
+                if (timeLeft <= 45 && timeLeft > 0) {
+                    btnNextEp.classList.remove('hidden');
+                    btnNextEp.classList.remove('hide-controls');
+                } else if (timeLeft > 45) {
+                    btnNextEp.classList.add('hide-controls');
+                }
+            }
+        });
+
+        // Ocultar barra superior al no mover el ratón (efecto Netflix)
+        playerView.addEventListener('mousemove', () => {
+            const topBar = document.getElementById('player-top-bar');
+            topBar.classList.remove('hide-controls');
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(() => {
+                // No ocultar si el video está en pausa
+                if (!videoElement.paused) {
+                    topBar.classList.add('hide-controls');
+                }
+            }, 3000);
+        });
 
         // Binge-Watching: Auto-Play al terminar video
         videoElement.addEventListener('ended', () => {
@@ -598,7 +665,29 @@
             }
         });
 
-        // Inicialización
+        // Botón Cerrar Reproductor
+        document.getElementById('btn-close-player').onclick = () => {
+            state.activeEpisode = null;
+            videoElement.pause();
+            videoElement.src = "";
+            
+            if (torrentClient) {
+                torrentClient.destroy();
+                torrentClient = null;
+            }
+
+            playerView.classList.replace('flex', 'hidden');
+            catalogView.classList.replace('hidden', 'block');
+            catalogView.classList.replace('hidden', 'flex-grow');
+        };
+
+        // Botón manual de Siguiente Episodio
+        btnNextEp.onclick = () => {
+            if (state.activeEpisode && state.activeEpisode.globalIndex < state.episodes.length - 1) {
+                openPlayer(state.episodes[state.activeEpisode.globalIndex + 1]);
+            }
+        };
+
         window.onload = initApp;
     </script>
 </body>
