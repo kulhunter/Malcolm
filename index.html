@@ -41,7 +41,7 @@
         .hide-controls {
             opacity: 0;
             pointer-events: none;
-            transform: translateY(-10px); /* Cambiado para que la barra suba al ocultarse */
+            transform: translateY(-10px);
         }
         .hide-controls-bottom {
             opacity: 0;
@@ -68,14 +68,6 @@
                 <a href="https://dantagle.cl" target="_blank" class="md:hidden hover:text-white transition"><i data-lucide="globe" class="w-5 h-5"></i></a>
                 <a href="https://linkedin.com/in/dantagle" target="_blank" class="md:hidden hover:text-white transition"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
             </div>
-
-            <div class="flex items-center gap-3 md:gap-5 text-white">
-                <i data-lucide="search" class="w-5 h-5 cursor-pointer hover:text-gray-300 transition drop-shadow-md"></i>
-                <i data-lucide="bell" class="w-5 h-5 cursor-pointer hover:text-gray-300 transition drop-shadow-md hidden sm:block"></i>
-                <div class="w-7 h-7 md:w-8 md:h-8 rounded bg-blue-500 flex items-center justify-center cursor-pointer font-bold text-[10px] md:text-xs text-white shadow-lg border border-blue-400/50">
-                    DT
-                </div>
-            </div>
         </nav>
 
         <div class="relative w-full pt-[130%] sm:pt-[80%] md:pt-[38%] bg-[#0f0f0f]">
@@ -89,7 +81,7 @@
                 <img src="https://raw.githubusercontent.com/kulhunter/Malcolm/main/logomalcolm.webp" alt="Malcolm in the Middle Logo" class="w-64 sm:w-80 md:w-96 mb-3 md:mb-6 drop-shadow-2xl object-contain"/>
                 
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 md:gap-3 text-[11px] md:text-sm font-semibold text-gray-300 mb-3 drop-shadow-md" id="hero-stats">
-                    <span class="text-green-400 font-bold">98% Match</span>
+                    <span class="text-green-400 font-bold"> MATCH</span>
                     <span>2000-2026</span>
                     <span class="border border-gray-500 bg-black/50 px-1.5 py-0.5 rounded text-[9px] md:text-xs">TV-14</span>
                     <span id="hero-seasons-count">8 Temporadas</span>
@@ -105,9 +97,6 @@
                     <button id="btn-play-hero" class="w-full sm:w-auto bg-white text-black py-3 px-8 rounded flex items-center justify-center gap-2 hover:bg-gray-200 transition shadow-xl font-bold text-sm md:text-base">
                         <i data-lucide="play" class="w-5 h-5 md:w-6 md:h-6 fill-black"></i> REPRODUCIR
                     </button>
-                    <button class="w-full sm:w-auto bg-gray-600/60 border border-gray-400/30 text-white py-3 px-8 rounded flex items-center justify-center gap-2 hover:bg-gray-500/70 transition backdrop-blur-md font-semibold text-sm md:text-base">
-                        <i data-lucide="plus" class="w-5 h-5 md:w-6 md:h-6"></i> MI LISTA
-                    </button>
                 </div>
             </div>
         </div>
@@ -117,7 +106,7 @@
         </div>
 
         <div class="px-4 md:px-16 mb-4 md:mb-6 z-20 relative">
-            <div id="season-tabs" class="flex gap-4 md:gap-8 overflow-x-auto pb-2 scrollbar-hide border-b border-gray-800/60">
+            <div id="season-tabs" class="flex gap-4 md:gap-8 overflow-x-auto pb-2 scrollbar-hide border-b border-gray-800/60 items-center">
                 </div>
         </div>
 
@@ -165,14 +154,10 @@
         </div>
 
         <div class="flex-grow flex items-center justify-center relative w-full h-full bg-black" id="video-container">
-            
             <video id="main-video" controls autoplay class="w-full h-full max-h-screen outline-none focus:outline-none">
                 <track id="video-track" label="Español" kind="subtitles" srclang="es" src="" default />
                 Tu navegador no soporta video HTML5.
             </video>
-
-            <div id="iframe-container" class="w-full h-full hidden">
-                </div>
             
             <button id="btn-next-episode" class="hide-controls-bottom player-controls-fade absolute bottom-24 right-4 md:right-8 bg-white text-black hover:bg-gray-200 px-4 py-2 md:px-6 md:py-3 rounded font-bold flex items-center gap-2 transition-all z-50 pointer-events-auto focus:outline-none shadow-2xl text-sm md:text-base cursor-pointer">
                 Siguiente <i data-lucide="skip-forward" class="w-4 h-4 md:w-5 md:h-5 fill-black"></i>
@@ -181,7 +166,7 @@
     </div>
 
     <script>
-        // 1. BASE DE DATOS DE URLs (Incluye Archive.org + Streamplay T8)
+        // 1. BASE DE DATOS DE URLs (T1 - T7)
         const rawUrls = [
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E01%20-%20Pilot.mp4",
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%201/S01E02%20-%20Red%20Dress.mp4",
@@ -333,20 +318,13 @@
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E19%20-%20Stevie%20in%20the%20Hospital.mp4",
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E20%20-%20Cattle%20Court.mp4",
             "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E21%20-%20Morp.mp4",
-            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E22%20-%20Graduation.mp4",
-            
-            // --- TEMPORADA 8 (NUEVA TEMPORADA 2026 - STREAMPLAY IFRAMES) ---
-            "iframe:https://streamplay.to/embed-8w1dx3ma4wxx.html",
-            "iframe:https://streamplay.to/embed-5v0fp1i7mfyt.html",
-            "iframe:https://streamplay.to/embed-3tdeujsbbqz5.html",
-            "iframe:https://streamplay.to/embed-r7zc3hb7b9yv.html"
+            "https://archive.org/download/malcolm-in-the-middle-complete-series-2000-2006/Malcolm%20in%20the%20Middle%20%28The%20Complete%20Series%29%20%5B2000%20-%202006%5D/Season%207/S07E22%20-%20Graduation.mp4"
         ];
 
         // 2. SINOPSIS Y CALIFICACIONES
         const metadataDB = {
             "S01E01": { title: "Pilot", rating: "8.8", summary: "Malcolm, de nueve años, es descubierto como un genio con un IQ de 165 y es transferido a regañadientes a la clase de los 'Krelboynes'." },
-            "S01E02": { title: "Red Dress", rating: "8.5", summary: "Lois encuentra su vestido rojo quemado y castiga a los chicos hasta que el culpable confiese. Mientras tanto, Hal asiste a un banquete." },
-            // ... Mismos datos de sinopsis ...
+            "S01E02": { title: "Red Dress", rating: "8.5", summary: "Lois encuentra su vestido rojo quemado y castiga a los chicos hasta que el culpable confiese. Mientras tanto, Hal asiste a un banquete." }
         };
 
         // Arreglo de Imágenes de Fondo
@@ -359,16 +337,10 @@
             "https://image.tmdb.org/t/p/w780/6x8zWbKj0jY6G33x94L3N4A30aW.jpg"
         ];
 
-        const s8Covers = [
-            "https://upload.wikimedia.org/wikipedia/en/6/6e/Malcolm_in_the_Middle_-_Life%27s_Still_Unfair.jpg",
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBEqqrfgZ54yoRg9vBbWWbKLgbcymFd_eq5A&s"
-        ];
-
         // 3. LÓGICA DE SUBTÍTULOS Y SINCRONIZACIÓN
-        let currentSrtContent = ""; // Guarda el texto original del SRT
-        let currentSubtitleOffset = 0; // Desfase en milisegundos
+        let currentSrtContent = ""; 
+        let currentSubtitleOffset = 0; 
 
-        // Función para sumar/restar tiempo a una marca de tiempo formato "HH:MM:SS,MMM"
         function shiftTime(timeStr, offsetMs) {
             const parts = timeStr.split(/[:,]/);
             const h = parseInt(parts[0], 10);
@@ -377,7 +349,7 @@
             const ms = parseInt(parts[3], 10);
 
             let totalMs = (h * 3600000) + (m * 60000) + (s * 1000) + ms + offsetMs;
-            if (totalMs < 0) totalMs = 0; // Prevenir tiempos negativos
+            if (totalMs < 0) totalMs = 0; 
 
             const newH = Math.floor(totalMs / 3600000);
             totalMs %= 3600000;
@@ -389,14 +361,12 @@
             return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}:${String(newS).padStart(2, '0')}.${String(newMs).padStart(3, '0')}`;
         }
 
-        // Convierte SRT a VTT aplicando el desfase
         function convertSrtToVtt(srtContent, offsetMs = 0) {
             let vtt = "WEBVTT\n\n";
             vtt += srtContent
                 .replace(/\{\\([ibu])\}/g, '</$1>')
                 .replace(/\{\\([ibu])\}/g, '<$1>')
                 .replace(/<br>/g, '\n')
-                // Modifica las marcas de tiempo en el vuelo
                 .replace(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/g, (match, p1, p2) => {
                     return `${shiftTime(p1, offsetMs)} --> ${shiftTime(p2, offsetMs)}`;
                 });
@@ -407,8 +377,6 @@
 
         async function loadGithubSubtitle(season, epId) {
             try {
-                if (season === 8) return; // S8 usa Iframe, no manejamos subtitulos aqui
-
                 const epNum = epId.split('E')[1];
                 const searchPattern = `${season}x${epNum}`;
 
@@ -426,10 +394,7 @@
                 const srtResponse = await fetch(subtitleFile.download_url);
                 if (!srtResponse.ok) throw new Error("Fallo al descargar el texto del subtítulo.");
 
-                // Guardar el SRT original para permitir sincronización posterior
                 currentSrtContent = await srtResponse.text();
-                
-                // Generar el VTT inicial (offset = 0)
                 applySubtitles(currentSrtContent, currentSubtitleOffset);
 
             } catch (error) {
@@ -447,17 +412,14 @@
             videoTrack.src = blobUrl;
             videoTrack.label = "Español";
             
-            // Forzar activación sin pausar el video
             if(videoElement.textTracks && videoElement.textTracks.length > 0) {
                 videoElement.textTracks[0].mode = 'showing';
             }
         }
 
-        // Función llamada por los botones UI para ajustar el delay
         function adjustSubtitleSync(changeMs) {
             currentSubtitleOffset += changeMs;
             
-            // Mostrar Toast Notification
             const toast = document.getElementById('sync-toast');
             const sign = currentSubtitleOffset > 0 ? '+' : '';
             toast.innerText = `Sincronización: ${sign}${(currentSubtitleOffset / 1000).toFixed(1)}s`;
@@ -469,14 +431,14 @@
                 toast.style.opacity = '0';
             }, 2000);
 
-            // Re-aplicar subtitulos si hay contenido
             if (currentSrtContent) {
                 applySubtitles(currentSrtContent, currentSubtitleOffset);
             }
         }
 
 
-        // 4. LÓGICA DEL ESTADO DE LA APP
+        // 4. LÓGICA DEL ESTADO DE LA APP Y CONTINUAR VIENDO
+        const STORAGE_KEY = 'malcolm_progress';
         let state = {
             episodes: [],
             seasons: [],
@@ -485,27 +447,16 @@
         };
 
         function initApp() {
-            let s8Counter = 1;
-            
             state.episodes = rawUrls.map((url, globalIndex) => {
-                let season = 1, code = `S01E01`, title = `Episodio`, coverUrl = "";
-                
-                if (url.startsWith('iframe:')) {
-                    season = 8;
-                    code = `S08E0${s8Counter}`;
-                    title = `La vida sigue siendo injusta - Parte ${s8Counter}`;
-                    coverUrl = s8Covers[(s8Counter - 1) % 2]; // Alternar entre las dos portadas
-                    s8Counter++;
-                } else {
-                    const match = url.match(/Season%20(\d+)\/(S\d+E\d+)%20-%20(.+)\.mp4/);
-                    if (match) {
-                        season = parseInt(match[1]);
-                        code = match[2];
-                        title = decodeURIComponent(match[3]).replace(/%27/g, "'"); 
-                    }
-                    const epNum = code.split('E')[1] || "01";
-                    coverUrl = `https://raw.githubusercontent.com/kulhunter/Malcolm/main/covers/${season}X${epNum}.jpg`;
+                let season = 1, code = `S01E01`, title = `Episodio`;
+                const match = url.match(/Season%20(\d+)\/(S\d+E\d+)%20-%20(.+)\.mp4/);
+                if (match) {
+                    season = parseInt(match[1]);
+                    code = match[2];
+                    title = decodeURIComponent(match[3]).replace(/%27/g, "'"); 
                 }
+                const epNum = code.split('E')[1] || "01";
+                const coverUrl = `https://raw.githubusercontent.com/kulhunter/Malcolm/main/covers/${season}X${epNum}.jpg`;
 
                 const meta = metadataDB[code] || {
                     title: title,
@@ -532,7 +483,30 @@
             renderSeasons();
             renderGrid();
             
-            document.getElementById('btn-play-hero').onclick = () => {
+            // Configurar botón principal con LocalStorage
+            const heroBtn = document.getElementById('btn-play-hero');
+            const savedDataStr = localStorage.getItem(STORAGE_KEY);
+            let savedData = null;
+
+            if (savedDataStr) {
+                try {
+                    savedData = JSON.parse(savedDataStr);
+                    if (savedData && savedData.epId) {
+                        heroBtn.innerHTML = `<i data-lucide="play" class="w-5 h-5 md:w-6 md:h-6 fill-black"></i> CONTINUAR VIENDO (${savedData.epId})`;
+                    }
+                } catch (e) {
+                    console.error("Error parsing localStorage data", e);
+                }
+            }
+
+            heroBtn.onclick = () => {
+                if (savedData && savedData.epId) {
+                    const epToResume = state.episodes.find(e => e.id === savedData.epId);
+                    if (epToResume) {
+                        openPlayer(epToResume, savedData.time);
+                        return;
+                    }
+                }
                 if(state.episodes.length > 0) openPlayer(state.episodes[0]);
             };
 
@@ -541,7 +515,9 @@
 
         function renderSeasons() {
             const tabsContainer = document.getElementById('season-tabs');
-            tabsContainer.innerHTML = state.seasons.map(season => `
+            
+            // Renderizar pestañas de temporadas internas
+            let tabsHTML = state.seasons.map(season => `
                 <button
                     onclick="changeSeason(${season})"
                     class="text-sm md:text-xl font-bold whitespace-nowrap transition-colors pb-2 focus:outline-none ${state.selectedSeason === season ? 'text-white border-b-2 md:border-b-4 border-red-600' : 'text-gray-500 hover:text-gray-300'}"
@@ -549,6 +525,18 @@
                     Temporada ${season}
                 </button>
             `).join('');
+
+            // Agregar botón externo para Temporada 8
+            tabsHTML += `
+                <button
+                    onclick="window.open('https://la.movie/series/malcolm-el-de-en-medio-la-vida-sigue-siendo-injusta-2026', '_blank')"
+                    class="text-sm md:text-xl font-bold whitespace-nowrap transition-colors pb-2 focus:outline-none text-gray-500 hover:text-gray-300 flex items-center gap-1.5"
+                >
+                    Temporada 8 <i data-lucide="external-link" class="w-4 h-4"></i>
+                </button>
+            `;
+
+            tabsContainer.innerHTML = tabsHTML;
         }
 
         function changeSeason(season) {
@@ -573,7 +561,7 @@
                             <i data-lucide="play-circle" class="w-10 h-10 md:w-12 md:h-12 text-white drop-shadow-lg"></i>
                         </div>
                         <div class="absolute top-2 right-2 bg-black/80 text-gray-300 text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded shadow-md border border-gray-700">
-                            ${ep.season === 8 ? '45m' : '22m'}
+                            22m
                         </div>
                     </div>
                     
@@ -600,20 +588,17 @@
         const playerView = document.getElementById('player-view');
         const videoElement = document.getElementById('main-video');
         const videoTrack = document.getElementById('video-track');
-        const iframeContainer = document.getElementById('iframe-container');
         const btnNextEp = document.getElementById('btn-next-episode');
-        const subtitleControls = document.getElementById('subtitle-controls');
         
         let mouseTimer = null;
 
         function openPlayerByGlobalIndex(index) {
-            openPlayer(state.episodes[index]);
+            openPlayer(state.episodes[index], 0);
         }
 
-        function openPlayer(episode) {
+        function openPlayer(episode, startTime = 0) {
             state.activeEpisode = episode;
             
-            // Ocultar catálogo, mostrar reproductor
             catalogView.classList.replace('flex-grow', 'hidden');
             catalogView.classList.replace('block', 'hidden');
             playerView.classList.replace('hidden', 'flex');
@@ -623,43 +608,35 @@
             document.getElementById('player-ep-code').innerText = episode.id;
             document.getElementById('player-ep-title').innerText = episode.title;
             
-            // Resetear estado de subtitulos
             currentSubtitleOffset = 0;
             currentSrtContent = "";
             videoTrack.src = "";
-            videoElement.src = "";
-            iframeContainer.innerHTML = "";
             
-            if (episode.url.startsWith('iframe:')) {
-                // T8: Lógica Iframe
-                videoElement.classList.add('hidden');
-                subtitleControls.classList.add('hidden'); // Ocultar ajuste de subs
-                iframeContainer.classList.remove('hidden');
-                
-                const cleanUrl = episode.url.replace('iframe:', '');
-                iframeContainer.innerHTML = `<iframe src="${cleanUrl}" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen="true" class="w-full h-full"></iframe>`;
-                
-                // En iframe no podemos detectar cuando termina, mostraremos el botón siempre
-                btnNextEp.classList.remove('hidden');
-                btnNextEp.classList.remove('hide-controls-bottom');
-
-            } else {
-                // T1-T7: Lógica HTML5
-                iframeContainer.classList.add('hidden');
-                videoElement.classList.remove('hidden');
-                subtitleControls.classList.remove('hidden'); // Mostrar ajuste de subs
-                
-                videoElement.src = episode.url;
-                loadGithubSubtitle(episode.season, episode.id);
-                videoElement.load();
+            videoElement.src = episode.url;
+            loadGithubSubtitle(episode.season, episode.id);
+            videoElement.load();
+            
+            videoElement.onloadedmetadata = () => {
+                if (startTime > 0) {
+                    videoElement.currentTime = startTime;
+                }
                 videoElement.play().catch(err => console.log("Error de auto-play:", err));
-            }
+            };
         }
 
-        // Mostrar botón "Siguiente" en HTML5
+        // Mostrar botón "Siguiente" y guardar progreso
         videoElement.addEventListener('timeupdate', () => {
             if (!videoElement.duration) return;
-            const timeLeft = videoElement.duration - videoElement.currentTime;
+            const currentTime = videoElement.currentTime;
+            const timeLeft = videoElement.duration - currentTime;
+            
+            // Guardar progreso en LocalStorage
+            if (state.activeEpisode) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    epId: state.activeEpisode.id,
+                    time: currentTime
+                }));
+            }
             
             if (state.activeEpisode && state.activeEpisode.globalIndex < state.episodes.length - 1) {
                 if (timeLeft <= 45 && timeLeft > 0) {
@@ -674,23 +651,17 @@
         playerView.addEventListener('mousemove', () => {
             const topBar = document.getElementById('player-top-bar');
             topBar.classList.remove('hide-controls');
-            if(state.activeEpisode && state.activeEpisode.url.startsWith('iframe:')){
-                 btnNextEp.classList.remove('hide-controls-bottom');
-            }
             
             clearTimeout(mouseTimer);
             mouseTimer = setTimeout(() => {
-                if (videoElement.paused && !state.activeEpisode.url.startsWith('iframe:')) return;
+                if (videoElement.paused) return;
                 topBar.classList.add('hide-controls');
-                if(state.activeEpisode && state.activeEpisode.url.startsWith('iframe:')){
-                     btnNextEp.classList.add('hide-controls-bottom');
-                }
             }, 3000);
         });
 
         videoElement.addEventListener('ended', () => {
             if (state.activeEpisode && state.activeEpisode.globalIndex < state.episodes.length - 1) {
-                openPlayer(state.episodes[state.activeEpisode.globalIndex + 1]);
+                openPlayer(state.episodes[state.activeEpisode.globalIndex + 1], 0);
             }
         });
 
@@ -698,7 +669,9 @@
             state.activeEpisode = null;
             videoElement.pause();
             videoElement.src = "";
-            iframeContainer.innerHTML = "";
+            
+            // Actualizar botón "Continuar viendo" al cerrar
+            initApp();
             
             playerView.classList.replace('flex', 'hidden');
             catalogView.classList.replace('hidden', 'block');
@@ -707,7 +680,7 @@
 
         btnNextEp.onclick = () => {
             if (state.activeEpisode && state.activeEpisode.globalIndex < state.episodes.length - 1) {
-                openPlayer(state.episodes[state.activeEpisode.globalIndex + 1]);
+                openPlayer(state.episodes[state.activeEpisode.globalIndex + 1], 0);
             }
         };
 
